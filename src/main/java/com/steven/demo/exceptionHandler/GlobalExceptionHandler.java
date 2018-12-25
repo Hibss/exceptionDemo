@@ -1,6 +1,7 @@
 package com.steven.demo.exceptionHandler;
 
 import com.steven.demo.common.CommonResponse;
+import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -22,10 +23,12 @@ public class GlobalExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @org.springframework.web.bind.annotation.ExceptionHandler(value = Exception.class)
-    public CommonResponse process(Exception e, HttpServletRequest request){
-        if (request != null && request instanceof ContentCachingRequestWrapper) {
+    public CommonResponse process(Exception e, ServletRequest request){
+        if (request != null) {
             ContentCachingRequestWrapper wrapper = (ContentCachingRequestWrapper) request;
-//            logger.error("BAD_REQUEST_BODY:{}", StringUtils.toEncodedString(wrapper.getContentAsByteArray(), Charset.forName(wrapper.getCharacterEncoding())));
+            logger.error("BAD_REQUEST_BODY:{}", StringUtils.newStringUtf8(wrapper.getContentAsByteArray()));
+            logger.error("BAD_REQUEST_URI:{}", wrapper.getRequestURI());
+            logger.error("BAD_REQUEST_URL:{}", wrapper.getRequestURL());
         }
 
         if(e instanceof MethodArgumentNotValidException){
